@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <div class="div-wrapper">
+      <img
+        src="https://cdn.shopify.com/s/files/1/0398/1954/2690/files/usastrong-IO-logo-dark_150x.png?v=1605827337"
+      />
+    </div>
+  
+    <meta
+      name="viewport"
+      content="initial-scale=1,maximum-scale=1,user-scalable=no"
+    />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.0/jquery.min.js"></script>
+    <script src="https://api.mapbox.com/mapbox-gl-js/v1.10.1/mapbox-gl.js"></script>
+    <link
+      href="https://api.mapbox.com/mapbox-gl-js/v1.10.1/mapbox-gl.css"
+      rel="stylesheet"
+    />
+    <script src="https://npmcdn.com/csv2geojson@latest/csv2geojson.js"></script>
+    <script src="https://npmcdn.com/@turf/turf/turf.min.js"></script>
+    <style>
+      /* Live */
+      body {
+        margin: 0;
+        padding: 0;
+      }
+      #map {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        width: 100%;
+      }
+      /* Popup styling */
+
+      .mapboxgl-popup {
+        padding-bottom: 5px;
+      }
+
+      .mapboxgl-popup-close-button {
+        display: none;
+      }
+
+      .mapboxgl-popup-content {
+        font: 400 15px/22px "Source Sans Pro", "Helvetica Neue", Sans-serif;
+        padding: 0;
+        width: 250px;
+        border-radius: 20px;
+        
+      }
+
+      .mapboxgl-popup-content-wrapper {
+        padding: 1%;
+      }
+
+      .mapboxgl-popup-content h3 {
+        background: #EA27C2;
+        text-align: center;
+        color: #fff;
+        margin: 0;
+        display: block;
+        padding: 10px;
+        font-weight: 700;
+        margin-top: -5px;
+        border-radius: 20px 20px 0px 0px;
+      }
+
+      .mapboxgl-popup-content h4 {
+        margin: 0;
+        display: block;
+        padding: 2px 2px 2px 10px;
+        font-weight: 400;
+      }
+
+      .mapboxgl-container {
+        cursor: pointer;
+      }
+
+      .mapboxgl-popup-anchor-top > .mapboxgl-popup-content {
+        margin-top: 3px;
+      }
+
+      .mapboxgl-popup-anchor-top > .mapboxgl-popup-tip {
+        border-bottom-color: rgb(61, 59, 59);
+      }
+      .div-wrapper {
+        position: absolute;
+        height: 100%;
+        width: 100%;
+      }
+
+      .div-wrapper img {
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        z-index: 9;
+        max-width: 160px;
+        background-color: #fff;
+        padding-top: 10px;
+        padding-right: 10px;
+        padding-left: 10px;
+        padding-bottom: 10px;
+        border-radius: 0px 20px 0px 0px;
+      }
+      .div-wrapper2 {
+        position: absolute;
+        height: 100%;
+        width: 100%;
+      }
+
+      .div-wrapper2 img {
+        position: absolute;
+        left: 0;
+        bottom: 100px;
+        z-index: 9;
+        max-width: 180px;
+        background-color: #fff;
+        margin-top: 70px;
+        padding-top: 10px;
+        padding-right: 10px;
+        padding-left: 10px;
+        padding-bottom: 10px;
+        border-radius: 0px 20px 20px 0px;
+      }
+         .button {
+        background-color: #EA27C2;
+        border: none;
+        color: white;
+        padding: 10px 10px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 20px;
+        margin: 4px 2px;
+        cursor: pointer;
+           border-radius:10px;
+
+      }
+    </style>
+  </head>
+  <body>
+    <script src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.5.1/mapbox-gl-geocoder.min.js"></script>
+    <link
+      rel="stylesheet"
+      href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.5.1/mapbox-gl-geocoder.css"
+      type="text/css"
+    />
+    <!-- Promise polyfill script required to use Mapbox GL Geocoder in IE 11 -->
+    <script src="https://cdn.jsdelivr.net/npm/es6-promise@4/dist/es6-promise.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/es6-promise@4/dist/es6-promise.auto.min.js"></script>
+    <div id="map"></div>
+
+    <script>
+             var transformRequest = (url, resourceType) => {
+            var isMapboxRequest =
+              url.slice(8, 22) === "api.mapbox.com" ||
+              url.slice(10, 26) === "tiles.mapbox.com";
+            return {
+              url: isMapboxRequest
+                ? url.replace("?", "?pluginName=sheetMapper&")
+                : url
+            };
+          };
+
+
+                //YOUR TURN: add your Mapbox token
+          mapboxgl.accessToken = 'pk.eyJ1IjoiY2hyaXMtbGFsbHkiLCJhIjoiY2theXd3M2MxMG9sdjJ2b2FhejQ0MmFzMSJ9.o7kyyVCt8MFaYLogzZhk8g'; //Mapbox token
+          var map = new mapboxgl.Map({
+            container: 'map', // container id
+            style: 'mapbox://styles/chris-lally/ckkrbwci002j317l9a9eec08x', //stylesheet location
+            center: [-100.411464, 37.7852299], // starting position
+            zoom: 3,// starting zoom
+            transformRequest: transformRequest
+          });
+
+            map.addControl(
+              new MapboxGeocoder({
+                accessToken: mapboxgl.accessToken,
+                mapboxgl: mapboxgl
+              })
+            );
+
+          var transformRequest = (url, resourceType) => {
+            var isMapboxRequest =
+              url.slice(8, 22) === "api.mapbox.com" ||
+              url.slice(10, 26) === "tiles.mapbox.com";
+            return {
+              url: isMapboxRequest
+                ? url.replace("?", "?pluginName=sheetMapper&")
+                : url
+            };
+          };
+
+
+             var transformRequest = (url, resourceType) => {
+            var isMapboxRequest =
+              url.slice(8, 22) === "api.mapbox.com" ||
+              url.slice(10, 26) === "tiles.mapbox.com";
+            return {
+              url: isMapboxRequest
+                ? url.replace("?", "?pluginName=sheetMapper&")
+                : url
+            };
+          };
+
+          $(document).ready(function () {
+            $.ajax({
+              type: "GET",
+              //YOUR TURN: Replace with csv export link
+              url: 'https://docs.google.com/spreadsheets/d/1Ney5flc7YCN1bOPEc3wpF2rJ2jxy-crRY7-zMBMHpZA/gviz/tq?tqx=out:csv&sheet=MapBox',
+              dataType: "text",
+              success: function (csvData) { makeGeoJSON(csvData); }
+            });
+
+
+
+            function makeGeoJSON(csvData) {
+              csv2geojson.csv2geojson(csvData, {
+                latfield: 'Latitude',
+                lonfield: 'Longitude',
+                delimiter: ','
+              }, function (err, data) {
+                map.on('load', function () {
+
+                  //Add the the layer to the map
+                  map.addLayer({
+                    'id': 'csvData',
+                    'type': 'circle',
+                    'source': {
+                      'type': 'geojson',
+                      'data': data
+                    },
+                    'paint': {
+                      'circle-radius': 10,
+                      'circle-color': "#EA27C2"
+                      
+                    }
+                  });
+
+
+                  // When a click event occurs on a feature in the csvData layer, open a popup at the
+                  // location of the feature, with description HTML from its properties.
+                  map.on('click', 'csvData', function (e) {
+                    var coordinates = e.features[0].geometry.coordinates.slice();
+                 var donationLink = `<h4><a href="${e.features[0].properties.Link}" target="_blank" class="button">Visit Store</a></h4>`;
+
+                  var embed2 = `${e.features[0].properties.Embed}`;
+
+                    var ImageCode = `${e.features[0].properties.ImageCode}`;
+
+
+                    //set popup text
+                    //You can adjust the values of the popup to match the headers of your CSV.
+                    // For example: e.features[0].properties.Name is retrieving information from the field Name in the original CSV.
+                    var description = `<h3>` + e.features[0].properties.Name + `<br>`+`</h3>` + `<h4>` + `<b>` + `Location: ` + `</b>` + e.features[0].properties.Address + `<b>` + e.features[0].properties.Description + `</h4>`+ ImageCode+ donationLink ;
+
+                    // Ensure that if the map is zoomed out such that multiple
+                    // copies of the feature are visible, the popup appears
+                    // over the copy being pointed to.
+                    while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
+                      coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
+                    }
+
+                    //add Popup to map
+
+                    new mapboxgl.Popup()
+                      .setLngLat(coordinates)
+                      .setHTML(description)
+                      .addTo(map);
+                  });
+
+                  // Change the cursor to a pointer when the mouse is over the places layer.
+                  map.on('mouseenter', 'csvData', function () {
+                    map.getCanvas().style.cursor = 'pointer';
+                  });
+
+                  // Change it back to a pointer when it leaves.
+                  map.on('mouseleave', 'places', function () {
+                    map.getCanvas().style.cursor = '';
+                  });
+
+                  var bbox = turf.bbox(data);
+                  map.fitBounds(bbox, { padding: 50 });
+
+                });
+
+              });
+            };
+          });
+    </script>
+  </body>
+</html>
