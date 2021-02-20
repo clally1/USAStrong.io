@@ -95,7 +95,7 @@
         left: 0;
         bottom: 0;
         z-index: 9;
-        max-width: 160px;
+        max-width: 50px;
         background-color: #fff;
         padding-top: 10px;
         padding-right: 10px;
@@ -137,6 +137,13 @@
            border-radius:10px;
 
       }
+               .imagecode img {
+        
+        padding: 10px 10px;
+       border-radius:10px;
+
+      }
+      
     </style>
   </head>
   <body>
@@ -232,7 +239,7 @@
                       'data': data
                     },
                     'paint': {
-                      'circle-radius': 10,
+                      'circle-radius': 5,
                       'circle-color': "#EA27C2"
                       
                     }
@@ -247,13 +254,13 @@
 
                   var embed2 = `${e.features[0].properties.Embed}`;
 
-                    var ImageCode = `${e.features[0].properties.ImageCode}`;
+                    var ImageCode = `<div>${e.features[0].properties.ImageCode}` ;
 
 
                     //set popup text
                     //You can adjust the values of the popup to match the headers of your CSV.
                     // For example: e.features[0].properties.Name is retrieving information from the field Name in the original CSV.
-                    var description = `<h3>` + e.features[0].properties.Name + `<br>`+`</h3>` + `<h4>` + `<b>` + `Location: ` + `</b>` + e.features[0].properties.Address + `<b>` + e.features[0].properties.Description + `</h4>`+ ImageCode+ donationLink ;
+                    var description = `<h3>` + e.features[0].properties.Name + `<br>`+`</h3>` + `<h4>` + `<b>` + `Location: ` + `</b>` + e.features[0].properties.Address + `<b>` + e.features[0].properties.Description + `</h4>`+ ImageCode + donationLink ;
 
                     // Ensure that if the map is zoomed out such that multiple
                     // copies of the feature are visible, the popup appears
