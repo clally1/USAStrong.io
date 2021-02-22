@@ -173,7 +173,8 @@
 
                 //YOUR TURN: add your Mapbox token
           mapboxgl.accessToken = 'pk.eyJ1IjoiY2hyaXMtbGFsbHkiLCJhIjoiY2theXd3M2MxMG9sdjJ2b2FhejQ0MmFzMSJ9.o7kyyVCt8MFaYLogzZhk8g'; //Mapbox token
-          var map = new mapboxgl.Map({
+          
+     map = new mapboxgl.Map({
             container: 'map', // container id
             style: 'mapbox://styles/chris-lally/ckkrbwci002j317l9a9eec08x', //stylesheet location
             center: [-100.411464, 37.7852299], // starting position
@@ -188,7 +189,8 @@
               })
             );
 
-          var transformRequest = (url, resourceType) => {
+          
+      transformRequest = (url, resourceType) => {
             var isMapboxRequest =
               url.slice(8, 22) === "api.mapbox.com" ||
               url.slice(10, 26) === "tiles.mapbox.com";
@@ -261,6 +263,8 @@
                     //You can adjust the values of the popup to match the headers of your CSV.
                     // For example: e.features[0].properties.Name is retrieving information from the field Name in the original CSV.
                     var description = `<h3>` + e.features[0].properties.Name + `<br>`+`</h3>` + `</h4>`+ ImageCode + donationLink ;
+                    var map = L.mapbox.map('map', 'examples.map-8ced9urs', {attributionControl: false});
+
 
                     // Ensure that if the map is zoomed out such that multiple
                     // copies of the feature are visible, the popup appears
