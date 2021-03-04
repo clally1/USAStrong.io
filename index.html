@@ -199,16 +199,24 @@
 
                 //YOUR TURN: add your Mapbox token
           mapboxgl.accessToken = 'pk.eyJ1IjoiY2hyaXMtbGFsbHkiLCJhIjoiY2theXd3M2MxMG9sdjJ2b2FhejQ0MmFzMSJ9.o7kyyVCt8MFaYLogzZhk8g'; //Mapbox token
-          var map = new mapboxgl.Map({
+           var bounds = [
+[-180, 10], // Southwest coordinates
+[-60, 75] // Northeast coordinates
+];
+      
+      var map = new mapboxgl.Map({
             container: 'map', // container id
             style: 'mapbox://styles/chris-lally/ckkrbwci002j317l9a9eec08x', //stylesheet location
             attributionControl: false,
             center: [-100.411464, 37.7852299], // starting position
             zoom: 3,// starting zoom
+        maxBounds: bounds,
             transformRequest: transformRequest
             
           });
 
+      
+      
             map.addControl(
               new MapboxGeocoder({
                 accessToken: mapboxgl.accessToken,
