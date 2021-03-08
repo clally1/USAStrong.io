@@ -251,7 +251,7 @@
             $.ajax({
               type: "GET",
               //YOUR TURN: Replace with csv export link
-              url: 'https://docs.google.com/spreadsheets/d/1Ney5flc7YCN1bOPEc3wpF2rJ2jxy-crRY7-zMBMHpZA/gviz/tq?tqx=out:csv&sheet=MapBox',
+              url: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRJioadfqrtu_wwnJ4sD_p4hibr513VeEKjUlvD_mmmp_M0-NeOmE_xGlDbOJGbJljmdsxR2OSWt3Jf/pub?gid=2033898235&single=true&output=csv&sheet=Map',
               dataType: "text",
               success: function (csvData) { makeGeoJSON(csvData); }
             });
