@@ -279,7 +279,10 @@ map.addControl(new mapboxgl.NavigationControl());
                     'type': 'circle',
                     'source': {
                       'type': 'geojson',
-                      'data': data
+                      'data': data,
+                      cluster: true,
+            clusterMaxZoom: 4, // Max zoom to cluster points on
+            clusterRadius: 40 // Radius of each cluster when clustering points (defaults to 50)
                     },
                     'paint': {
                       'circle-radius': 9,
@@ -287,39 +290,107 @@ map.addControl(new mapboxgl.NavigationControl());
                       
                     }
                   });
+                  
+                  
+map.addLayer({
+id: 'clusters',
+type: 'circle',
+source: 'csvData',
+filter: ['has', 'point_count'],
+paint: {
+// Use step expressions (https://docs.mapbox.com/mapbox-gl-js/style-spec/#expressions-step)
+// with three steps to implement three types of circles:
+//   * Blue, 20px circles when point count is less than 100
+//   * Yellow, 30px circles when point count is between 100 and 750
+//   * Pink, 40px circles when point count is greater than or equal to 750
+'circle-color': [
+'step',
+['get', 'point_count'],
+'#EA27C2',
+100,
+'#EA27C2',
+750,
+'#EA27C2'
+],
+'circle-radius': [
+'step',
+['get', 'point_count'],
+20,
+100,
+30,
+750,
+40
+]
+}
+});
+ 
+map.addLayer({
+id: 'cluster-count',
+type: 'symbol',
+source: 'csvData',
+filter: ['has', 'point_count'],
+layout: {
+'text-field': '{point_count_abbreviated}',
+'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
+'text-size': 12
+}
+});
+ 
+map.addLayer({
+id: 'unclustered-point',
+type: 'circle',
+source: 'csvData',
+filter: ['!', ['has', 'point_count']],
+paint: {
+'circle-color': '#EA27C2',
+'circle-radius': 4,
+'circle-stroke-width': 0,
+'circle-stroke-color': '#fff'
+}
+});
 
 
                   // When a click event occurs on a feature in the csvData layer, open a popup at the
                   // location of the feature, with description HTML from its properties.
+               
                   map.on('click', 'csvData', function (e) {
-                 var coordinates = e.features[0].geometry.coordinates.slice();
-                 var donationLink = `<h4><a href="${e.features[0].properties.Link}" target="_blank" class="button">`+e.features[0].properties.Name+` →</a></h4>`;
-
-           
-
-                    var ImageCode = `<div class="image div"><img class="profile" src="${e.features[0].properties.Image}"><div>` ;
-
-
-                    //set popup text
-                    //You can adjust the values of the popup to match the headers of your CSV.
-                    // For example: e.features[0].properties.Name is retrieving information from the field Name in the original CSV.
-                    var description = `<div class="pop">`+ImageCode+ donationLink+`</div>`;
-
-                    // Ensure that if the map is zoomed out such that multiple
-                    // copies of the feature are visible, the popup appears
-                    // over the copy being pointed to.
-                    while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
-                      coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
+                    if (!!e.features[0].properties.Image){
+                     var coordinates = e.features[0].geometry.coordinates.slice();
+                     var donationLink = `<h4><a href="${e.features[0].properties.Link}" target="_blank" class="button">`+e.features[0].properties.Name+` →</a></h4>`;
+    
+               
+    
+                        var ImageCode = `<div class="image div"><img class="profile" src="${e.features[0].properties.Image}"><div>` ;
+    
+    
+                        //set popup text
+                        //You can adjust the values of the popup to match the headers of your CSV.
+                        // For example: e.features[0].properties.Name is retrieving information from the field Name in the original CSV.
+                        var description = `<div class="pop">`+ImageCode+ donationLink+`</div>`;
+    
+                        // Ensure that if the map is zoomed out such that multiple
+                        // copies of the feature are visible, the popup appears
+                        // over the copy being pointed to.
+                        while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
+                          coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
+                        }
+    
+                        //add Popup to map
+                          new mapboxgl.Popup()
+                          .setLngLat(coordinates)
+                          .setHTML(description)
+                          .addTo(map);
+                      
                     }
-
-                    //add Popup to map
-
-                    new mapboxgl.Popup()
-                      .setLngLat(coordinates)
-                      .setHTML(description)
-                      .addTo(map);
                   });
 
+map.on('mouseenter', 'csvData', function () {
+map.getCanvas().style.cursor = 'pointer';
+});
+                  // Change it back to a pointer when it leaves.
+map.on('mouseleave', 'csvData', function () {
+map.getCanvas().style.cursor = '';
+});
                   
 map.on('click','csvData', function (e) {
   if (map.getZoom() < 6) {
