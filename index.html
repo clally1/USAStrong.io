@@ -199,9 +199,10 @@
 
                 //YOUR TURN: add your Mapbox token
           mapboxgl.accessToken = 'pk.eyJ1IjoiY2hyaXMtbGFsbHkiLCJhIjoiY2theXd3M2MxMG9sdjJ2b2FhejQ0MmFzMSJ9.o7kyyVCt8MFaYLogzZhk8g'; //Mapbox token
-           var bounds = [
+           
+      var bounds = [
 [-180, 10], // Southwest coordinates
-[-60, 75] // Northeast coordinates
+[-30, 75] // Northeast coordinates
 ];
       
 
@@ -229,6 +230,7 @@ map.addControl(new mapboxgl.NavigationControl());
             center: [-100.411464, 37.7852299], // starting position
             zoom: 3,// starting zoom
         maxBounds: bounds,
+        
             transformRequest: transformRequest
             
           });
@@ -238,6 +240,7 @@ map.addControl(new mapboxgl.NavigationControl());
             map.addControl(
               new MapboxGeocoder({
                 accessToken: mapboxgl.accessToken,
+                placeholder: 'Search by City, State',
                 mapboxgl: mapboxgl
               })
             );
@@ -383,7 +386,11 @@ paint: {
                       
                     }
                   });
+map.addControl(new mapboxgl.NavigationControl());
 
+map.dragRotate.disable();
+                  
+                  
 map.on('mouseenter', 'csvData', function () {
 map.getCanvas().style.cursor = 'pointer';
 });
