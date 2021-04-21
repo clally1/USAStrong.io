@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <div class="div-wrapper">
     <img
-        src="https://cdn.shopify.com/s/files/1/0398/1954/2690/files/usastrong-IO-logo-dark_150x.png?v=1605827337"
+        src="https://uploads-ssl.webflow.com/5ff75371303e0cec91464713/6037bf1a2acfe80498872ae2_STRONG%20MARKETPLACE%20LOGO.png"
       />
     </div>
   
@@ -39,19 +39,22 @@
       }
 
       .mapboxgl-popup-close-button {
-        display: none;
+        display: relative;
+        background:#fff;
+        border-radius:10px;
+        z-index:2;
       }
 
       .mapboxgl-popup-content {
         font: 400 15px/22px "Source Sans Pro", "Helvetica Neue", Sans-serif;
         padding: 0;
-        width: 250px;
+        width: auto;
         border-radius: 20px;
         
       }
 
       .mapboxgl-popup-content-wrapper {
-        padding: 1%;
+        padding: 0%;
       }
 
       .mapboxgl-popup-content h3 {
@@ -62,15 +65,16 @@
         display: block;
         padding: 10px;
         font-weight: 700;
-        margin-top: -5px;
+        margin-top: 0px;
         border-radius: 20px 20px 0px 0px;
       }
 
       .mapboxgl-popup-content h4 {
         margin: 0;
         display: block;
-        padding: 2px 2px 2px 10px;
+        padding: 0px 0px 0px 0px;
         font-weight: 400;
+        text-align:center;
       }
 
       .mapboxgl-container {
@@ -95,18 +99,21 @@
         left: 0;
         bottom: 0;
         z-index: 9;
-        max-width: 50px;
+        width:40px;
+      height:43px;
+        max-width: 40px;
         background-color: #fff;
-        padding-top: 10px;
-        padding-right: 10px;
-        padding-left: 10px;
-        padding-bottom: 10px;
+        padding-top: 5px;
+        padding-right: 5px;
+        padding-left: 5px;
+        padding-bottom: 5px;
         border-radius: 0px 20px 0px 0px;
       }
       .div-wrapper2 {
         position: absolute;
         height: 100%;
         width: 100%;
+         overflow: auto;
       }
 
       .div-wrapper2 img {
@@ -122,27 +129,46 @@
         padding-left: 10px;
         padding-bottom: 10px;
         border-radius: 0px 20px 20px 0px;
+        border-radius:50%;
       }
          .button {
         background-color: #EA27C2;
         border: none;
         color: white;
-        padding: 10px 10px;
+        padding: 2px 10px 2px 10px;
         text-align: center;
         text-decoration: none;
         display: inline-block;
-        font-size: 20px;
-        margin: 4px 2px;
+        font-size: 10px;
+          line-height:12px;
+       position:absolute;
+           bottom: 0;
+    left: 0;
+    right: 0;
         cursor: pointer;
-           border-radius:10px;
-
+           border-radius:0px 0px 10px 10px;
+        
       }
-               .imagecode img {
-        display: none;
-        padding: 10px 10px;
-       border-radius:10px;
-
+       .profile {
+        object-fit: cover;
+        width:90px;
+         height:90px;
+       border-radius:20px 20px 0px 0px;
+          float: center;
+    
+         
       }
+      .pop {
+        position:relative;
+  text-align:center;
+}
+
+      .stack{
+        text-align:center;
+      }
+      div.mapboxgl-ctrl-bottom-left{
+    display: none !important;
+}
       
     </style>
   </head>
@@ -173,24 +199,55 @@
 
                 //YOUR TURN: add your Mapbox token
           mapboxgl.accessToken = 'pk.eyJ1IjoiY2hyaXMtbGFsbHkiLCJhIjoiY2theXd3M2MxMG9sdjJ2b2FhejQ0MmFzMSJ9.o7kyyVCt8MFaYLogzZhk8g'; //Mapbox token
-          
-     map = new mapboxgl.Map({
+           
+      var bounds = [
+[-180, 10], // Southwest coordinates
+[-30, 75] // Northeast coordinates
+];
+      
+
+          $(document).ready(function () {
+            $.ajax({
+              type: "GET",
+              //YOUR TURN: Replace with csv export link
+              url: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRJioadfqrtu_wwnJ4sD_p4hibr513VeEKjUlvD_mmmp_M0-NeOmE_xGlDbOJGbJljmdsxR2OSWt3Jf/pub?gid=2033898235&single=true&output=csv&sheet=Map',
+              dataType: "text",
+              success: function (csvData) { makeGeoJSON(csvData); },
+              error: function() { setInterval(fn,100000)}
+            });
+
+map.addControl(new mapboxgl.NavigationControl());
+
+    
+
+            
+            
+            function makeGeoJSON(csvData) {
+                
+                
+      var map = new mapboxgl.Map({
             container: 'map', // container id
             style: 'mapbox://styles/chris-lally/ckkrbwci002j317l9a9eec08x', //stylesheet location
+            attributionControl: false,
             center: [-100.411464, 37.7852299], // starting position
-            zoom: 2,// starting zoom
+            zoom: 3,// starting zoom
+        maxBounds: bounds,
+        
             transformRequest: transformRequest
+            
           });
 
+      
+      
             map.addControl(
               new MapboxGeocoder({
                 accessToken: mapboxgl.accessToken,
+                placeholder: 'Search by City, State',
                 mapboxgl: mapboxgl
               })
             );
 
-          
-      transformRequest = (url, resourceType) => {
+          var transformRequest = (url, resourceType) => {
             var isMapboxRequest =
               url.slice(8, 22) === "api.mapbox.com" ||
               url.slice(10, 26) === "tiles.mapbox.com";
@@ -212,19 +269,8 @@
                 : url
             };
           };
-
-          $(document).ready(function () {
-            $.ajax({
-              type: "GET",
-              //YOUR TURN: Replace with csv export link
-              url: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQ41PRk1E5yBmodOTHk2O2rK3D-qhKBuTDMtThf3Oq_wMAlTLsVISnJzYGh5etvHg91d20Us7HtzJAl/pub?output=csv',
-              dataType: "text",
-              success: function (csvData) { makeGeoJSON(csvData); }
-            });
-
-
-
-            function makeGeoJSON(csvData) {
+                
+                
               csv2geojson.csv2geojson(csvData, {
                 latfield: 'Latitude',
                 lonfield: 'Longitude',
@@ -238,49 +284,158 @@
                     'type': 'circle',
                     'source': {
                       'type': 'geojson',
-                      'data': data
+                      'data': data,
+                      cluster: true,
+            clusterMaxZoom: 4, // Max zoom to cluster points on
+            clusterRadius: 40 // Radius of each cluster when clustering points (defaults to 50)
                     },
                     'paint': {
-                      'circle-radius': 12,
+                      'circle-radius': 9,
                       'circle-color': "#EA27C2"
                       
                     }
                   });
+                  
+                  
+map.addLayer({
+id: 'clusters',
+type: 'circle',
+source: 'csvData',
+filter: ['has', 'point_count'],
+paint: {
+// Use step expressions (https://docs.mapbox.com/mapbox-gl-js/style-spec/#expressions-step)
+// with three steps to implement three types of circles:
+//   * Blue, 20px circles when point count is less than 100
+//   * Yellow, 30px circles when point count is between 100 and 750
+//   * Pink, 40px circles when point count is greater than or equal to 750
+'circle-color': [
+'step',
+['get', 'point_count'],
+'#EA27C2',
+100,
+'#EA27C2',
+750,
+'#EA27C2'
+],
+'circle-radius': [
+'step',
+['get', 'point_count'],
+20,
+100,
+30,
+750,
+40
+]
+}
+});
+ 
+map.addLayer({
+id: 'cluster-count',
+type: 'symbol',
+source: 'csvData',
+filter: ['has', 'point_count'],
+layout: {
+'text-field': '{point_count_abbreviated}',
+'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
+'text-size': 12
+}
+});
+ 
+map.addLayer({
+id: 'unclustered-point',
+type: 'circle',
+source: 'csvData',
+filter: ['!', ['has', 'point_count']],
+paint: {
+'circle-color': '#EA27C2',
+'circle-radius': 4,
+'circle-stroke-width': 0,
+'circle-stroke-color': '#fff'
+}
+});
 
 
                   // When a click event occurs on a feature in the csvData layer, open a popup at the
                   // location of the feature, with description HTML from its properties.
+               
                   map.on('click', 'csvData', function (e) {
-                    var coordinates = e.features[0].geometry.coordinates.slice();
-                 var donationLink = `<h4><a href="${e.features[0].properties.Link}" target="_blank" class="button">Visit Store</a></h4>`;
-
-                  var embed2 = `${e.features[0].properties.Embed}`;
-
-                    var ImageCode = `<div>${e.features[0].properties.ImageCode}` ;
-
-
-                    //set popup text
-                    //You can adjust the values of the popup to match the headers of your CSV.
-                    // For example: e.features[0].properties.Name is retrieving information from the field Name in the original CSV.
-                    var description = `<h3>` + e.features[0].properties.Name + `<br>`+`</h3>` + `</h4>` + donationLink ;
-                
-
-
-                    // Ensure that if the map is zoomed out such that multiple
-                    // copies of the feature are visible, the popup appears
-                    // over the copy being pointed to.
-                    while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
-                      coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
+                    if (!!e.features[0].properties.Image){
+                     var coordinates = e.features[0].geometry.coordinates.slice();
+                     var donationLink = `<h4><a href="${e.features[0].properties.Link}" target="_blank" class="button">`+e.features[0].properties.Name+` →</a></h4>`;
+    
+               
+    
+                        var ImageCode = `<div class="image div"><img class="profile" src="${e.features[0].properties.Image}"><div>` ;
+    
+    
+                        //set popup text
+                        //You can adjust the values of the popup to match the headers of your CSV.
+                        // For example: e.features[0].properties.Name is retrieving information from the field Name in the original CSV.
+                        var description = `<div class="pop">`+ImageCode+ donationLink+`</div>`;
+    
+                        // Ensure that if the map is zoomed out such that multiple
+                        // copies of the feature are visible, the popup appears
+                        // over the copy being pointed to.
+                        while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
+                          coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
+                        }
+    
+                        //add Popup to map
+                          new mapboxgl.Popup()
+                          .setLngLat(coordinates)
+                          .setHTML(description)
+                          .addTo(map);
+                      
                     }
-
-                    //add Popup to map
-
-                    new mapboxgl.Popup()
-                      .setLngLat(coordinates)
-                      .setHTML(description)
-                      .addTo(map);
                   });
+map.addControl(new mapboxgl.NavigationControl());
 
+map.dragRotate.disable();
+                  
+                  
+map.on('mouseenter', 'csvData', function () {
+map.getCanvas().style.cursor = 'pointer';
+});
+                  // Change it back to a pointer when it leaves.
+map.on('mouseleave', 'csvData', function () {
+map.getCanvas().style.cursor = '';
+});
+                  
+map.on('click','csvData', function (e) {
+  if (map.getZoom() < 6) {
+    
+    map.flyTo({
+center: e.features[0].geometry.coordinates,
+  speed: 0.5, // make the flying slow
+  zoom:6,
+})
+    
+  } 
+
+  else {
+      map.flyTo({
+center: e.features[0].geometry.coordinates,
+  speed: 0.5, // make the flying slow
+  zoom:map.getZoom(),
+      })
+  }
+}
+);
+  
+             
+map.scrollZoom.disable();
+map.on("wheel", event => {
+  if (event.originalEvent.ctrlKey) { // Check if CTRL key is pressed
+    event.originalEvent.preventDefault(); // Prevent chrome/firefox default behavior
+    if (!map.scrollZoom._enabled) map.scrollZoom.enable(); // Enable zoom only if it's disabled
+  } else {
+    if (map.scrollZoom._enabled) map.scrollZoom.disable(); // Disable zoom only if it's enabled
+  }
+});
+                  
+                  
+                  
+                  
                   // Change the cursor to a pointer when the mouse is over the places layer.
                   map.on('mouseenter', 'csvData', function () {
                     map.getCanvas().style.cursor = 'pointer';
@@ -296,6 +451,16 @@
 
                 });
 
+                 map.on('load', function () {
+        
+        map.flyTo({
+            center: [-100,40],
+            zoom: 3.2,
+          speed:0.2,
+            essential: true // this animation is considered essential with respect to prefers-reduced-motion
+        });
+    });
+                
               });
             };
           });
