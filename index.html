@@ -2,8 +2,9 @@
 <html>
   <head>
     <meta charset="utf-8" />
+    <img id="scrollid" class="scrollNone" src="https://raw.githubusercontent.com/clally1/USAStrong.io/main/Scroll.png" width="100vh" height="100vw">
     <div class="div-wrapper">
-    <img
+      <img
         src="https://uploads-ssl.webflow.com/5ff75371303e0cec91464713/6037bf1a2acfe80498872ae2_STRONG%20MARKETPLACE%20LOGO.png"
       />
     </div>
@@ -26,6 +27,16 @@
         margin: 0;
         padding: 0;
       }
+      img.scroll {
+        position:absolute;
+  width: 100%;
+  height: 100vh;
+        z-index:10;
+        display:inline;
+}
+      img.scrollNone {
+        display:none;
+}
       #map {
         position: absolute;
         top: 0;
@@ -185,6 +196,9 @@
     <div id="map"></div>
 
     <script>
+
+  
+
              var transformRequest = (url, resourceType) => {
             var isMapboxRequest =
               url.slice(8, 22) === "api.mapbox.com" ||
@@ -217,6 +231,8 @@
             });
 
 map.addControl(new mapboxgl.NavigationControl());
+
+    
 
             
             
@@ -268,7 +284,7 @@ map.addControl(new mapboxgl.NavigationControl());
             };
           };
                 
-                
+
               csv2geojson.csv2geojson(csvData, {
                 latfield: 'Latitude',
                 lonfield: 'Longitude',
@@ -419,9 +435,41 @@ center: e.features[0].geometry.coordinates,
   }
 }
 );
-  
+
+
                   
+map.scrollZoom.disable();
                   
+
+
+map.on("wheel", event => {
+
+  if (event.originalEvent.ctrlKey) {
+
+// Check if CTRL key is pressed
+    event.originalEvent.preventDefault(); // Prevent chrome/firefox default behavior
+    if (!map.scrollZoom._enabled)
+         
+
+      map.scrollZoom.enable();// Enable zoom only if it's disabled
+
+  } else {
+              document.getElementById("scrollid").className = "scroll";
+    setTimeout(function (){
+
+  document.getElementById("scrollid").className = "scrollNone";
+
+}, 1500); // How long do you want the delay to be (in milliseconds)? 
+
+    if (map.scrollZoom._enabled)
+
+      map.scrollZoom.disable(); // Disable zoom only if it's enabled
+  }
+
+});
+            
+          
+      
                   
                   
                   
